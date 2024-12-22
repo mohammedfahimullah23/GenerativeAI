@@ -17,3 +17,4 @@ fastapi
 uvicorn
 langserve
 sse_starlette
+langchain-chroma
