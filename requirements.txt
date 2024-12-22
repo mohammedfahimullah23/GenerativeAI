@@ -18,3 +18,5 @@ uvicorn
 langserve
 sse_starlette
 langchain-chroma
+arxiv
+wikipedia
