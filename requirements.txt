@@ -20,3 +20,4 @@ sse_starlette
 langchain-chroma
 arxiv
 wikipedia
+duckduckgo-search
