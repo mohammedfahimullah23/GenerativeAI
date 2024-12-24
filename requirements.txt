@@ -23,3 +23,7 @@ wikipedia
 duckduckgo-search
 tiktoken
 langgraph
+validators
+youtube-transcript-api
+pytube
+unstructured
