@@ -21,3 +21,5 @@ langchain-chroma
 arxiv
 wikipedia
 duckduckgo-search
+tiktoken
+langgraph
