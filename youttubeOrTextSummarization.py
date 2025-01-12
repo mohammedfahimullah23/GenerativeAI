@@ -3,12 +3,14 @@ from langchain.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import YoutubeLoader, UnstructuredURLLoader
+from langchain_core.output_parsers import StrOutputParser
 import os
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# streamlit run youttubeOrTextSummarization.py 
 
 ## sstreamlit APP
 st.set_page_config(
@@ -19,27 +21,23 @@ st.subheader("Summarize URL")
 
 groq_api_key = os.getenv("GROQ_API_KEY")
 
-## Get the Groq API Key and url(YT or website)to be summarized
 with st.sidebar:
     groq_api_key = st.text_input("Groq API Key", value=groq_api_key, type="password")
 
 generic_url = st.text_input("URL", label_visibility="collapsed")
 
-## Gemma Model USsing Groq API
-llm = ChatGroq(model="Gemma2-9b-It", groq_api_key=groq_api_key)
+
+llm = ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=groq_api_key)
 
 prompt_template = """
-I am an investor and I will be applying for ipo. in that context given below i will be giving you the 
-link of the website where you need to tell whether to apply for the ipo or not.
-If the company is good and has good profits and has a good future then you can tell me to apply for the ipo.
-Give me an answer with yes or no. And then give the reason for the same in points
-Content:{text}`
-
+I will provide you with a YouTube or website link, and I need you to summarize the content using the context provided.Summarize the video or the website link in point so that the users
+can understand clearly.Please do not add extra details. Only add whatever is mentioned in the video or the website.
+Context: {text}
 """
 prompt = PromptTemplate(template=prompt_template, input_variables=["text"])
+parser = StrOutputParser()
 
 if st.button("Summarize the Content from YT or Website"):
-    ## Validate all the inputs
     if not groq_api_key.strip() or not generic_url.strip():
         st.error("Please provide the information to get started")
     elif not validators.url(generic_url):
@@ -50,10 +48,9 @@ if st.button("Summarize the Content from YT or Website"):
     else:
         try:
             with st.spinner("Waiting..."):
-                ## loading the website or yt video data
                 if "youtube.com" in generic_url:
                     loader = YoutubeLoader.from_youtube_url(
-                        generic_url, add_video_info=True
+                        youtube_url=generic_url, add_video_info=False
                     )
                 else:
                     loader = UnstructuredURLLoader(
@@ -65,7 +62,6 @@ if st.button("Summarize the Content from YT or Website"):
                     )
                 docs = loader.load()
 
-                ## Chain For Summarization
                 chain = load_summarize_chain(llm, chain_type="stuff", prompt=prompt)
                 output_summary = chain.run(docs)
 
